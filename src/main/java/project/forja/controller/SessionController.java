@@ -1,9 +1,15 @@
 package project.forja.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import project.forja.controller.dto.create.CreateSessionDto;
 import project.forja.controller.dto.response.SessionResponseDto;
+import project.forja.controller.dto.update.UpdateCatalogDto;
+import project.forja.controller.dto.update.UpdateUserDto;
 import project.forja.service.SessionService;
 
 import java.util.List;
@@ -14,15 +20,12 @@ import java.util.UUID;
 @RequestMapping("/v1")
 public class SessionController {
 
+    @Autowired
     private SessionService sessionService;
 
-    // Injeção de dependência via construtor
-    public SessionController(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
 
     @PostMapping("/session")
-    public ResponseEntity<Void> createSessionById(@RequestBody CreateSessionDto createSessionDto) {
+    public ResponseEntity<Void> createSessionById(@Valid @RequestBody CreateSessionDto createSessionDto) {
         sessionService.createSession(createSessionDto);
         return ResponseEntity.ok().build();
     }
@@ -44,6 +47,19 @@ public class SessionController {
         sessionService.deleteBySessionId(sessionId);
         return ResponseEntity.noContent().build();
     }
+
+    // Tratamento de exceções que faltam o ID na solicitação
+
+    @GetMapping({"", "/"})
+    public ResponseEntity<List<SessionResponseDto>> listSessionWithoutUserId() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Id do usuário é obrigatório.");
+    }
+
+    @DeleteMapping({"", "/"})
+    public ResponseEntity<Void> deleteWithoutId() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Id do treinamento é obrigatório.");
+    }
+
 }
 
 

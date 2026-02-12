@@ -9,12 +9,12 @@ import java.util.UUID;
 public class CardioLog {
 
 
-
     @Column(name = "distance_km")
     private Double distanceKm;
 
     @Column(name = "pace")
-    private Double pace;@Id
+    private Double pace;
+    @Id
     private UUID id;
 
     @Column(name = "elevation_gain")

@@ -1,8 +1,12 @@
 package project.forja.controller;
 
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import project.forja.controller.dto.create.CreateUserDto;
 import project.forja.controller.dto.response.UserResponseDto;
 import project.forja.controller.dto.update.UpdateUserDto;
@@ -16,15 +20,11 @@ import java.util.List;
 @RequestMapping("/v1/users")
 public class UserController {
 
+    @Autowired
     private UserService userService;
 
-    // Injeção de dependência via construtor
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody CreateUserDto createUserDTO) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDto createUserDTO) {
         var userID = userService.createUser(createUserDTO);
         return ResponseEntity.created(URI.create("/v1/users/" + userID.toString())).build();
     }
@@ -42,16 +42,31 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Void> updateUserById(@PathVariable("userId") String userId,
+    public ResponseEntity<Void> updateUserById(@Valid @PathVariable("userId") String userId,
                                                @RequestBody UpdateUserDto updateUserDTO) {
         userService.updateUserById(userId, updateUserDTO);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
-
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable("userId") String userId) {
         userService.deleteById(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    // Tratamento de exceções que faltam o ID na solicitação
+    @PutMapping({"", "/"})
+    public ResponseEntity<Void> updateWithouId() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ID do usuário é obrigatório.");
+    }
+
+    @DeleteMapping({"", "/"})
+    public ResponseEntity<Void> deleteWithoutId() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ID do usuário é obrigatório.");
+    }
+
+    @GetMapping({"", "/"})
+    public ResponseEntity<User> getUserById() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ID do usuário é obrigatório.");
     }
 }

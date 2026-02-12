@@ -2,7 +2,6 @@ package project.forja.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,7 +14,7 @@ public class ExerciseCatalog {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "muscle_group")
+    @Column(name = "muscle_group", unique = true)
     private MuscleGroup muscleGroup;
 
     @Column(name = "name_exercise", nullable = false, unique = true)

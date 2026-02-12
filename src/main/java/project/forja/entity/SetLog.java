@@ -14,10 +14,10 @@ public class SetLog {
     private UUID id;
 
     @Column(name = "serie_number")
-    private int serie_number;
+    private Integer serie_number;
 
     @Column(name = "reps")
-    private int reps;
+    private Integer reps;
 
     @Column(name = "weight_kg")
     private Double weightKg;
@@ -26,7 +26,7 @@ public class SetLog {
     @JoinColumn(name = "lifting_log_id")
     private LiftingLog liftingLog;
 
-    public SetLog(int serie_number, int reps, Double weightKg) {
+    public SetLog(Integer serie_number, Integer reps, Double weightKg) {
         this.serie_number = serie_number;
         this.reps = reps;
         this.weightKg = weightKg;
@@ -40,7 +40,7 @@ public class SetLog {
         this.id = id;
     }
 
-    public int getReps() {
+    public Integer getReps() {
         return reps;
     }
 

@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import project.forja.entity.ExerciseCatalog;
 import project.forja.entity.MuscleGroup;
-import project.forja.entity.SetLog;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,5 +21,8 @@ public interface ExerciseCatalogRepository extends JpaRepository<ExerciseCatalog
             "LIKE LOWER(CONCAT('%', :name, '%')))")
     List<ExerciseCatalog> findWithFilters(@Param("muscleGroup") MuscleGroup muscleGroup,
                                           @Param("name") String name);
+
+    boolean findByName(String name);
+
 }
 

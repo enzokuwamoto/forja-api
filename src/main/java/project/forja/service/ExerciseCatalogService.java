@@ -1,6 +1,9 @@
 package project.forja.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import project.forja.controller.dto.create.CreateCatalogDto;
 import project.forja.controller.dto.response.ExerciseCatalogResponseDto;
 import project.forja.entity.ExerciseCatalog;
 import project.forja.entity.MuscleGroup;
@@ -19,15 +22,26 @@ public class ExerciseCatalogService {
     }
 
 
+    public void createCatalog(CreateCatalogDto createCatalogDto) {
+        if (repository.findByName(createCatalogDto.name())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Exercício existente no catálogo.");
+        };
+        // DTO -> ENTITY
+        var exercise = new ExerciseCatalog(
+                createCatalogDto.muscleGroup(),
+                createCatalogDto.name()
+        );
+        var exerciseSaved = repository.save(exercise);
+    }
 
-    public List<ExerciseCatalogResponseDto> listExercises(String muscleGroupString, String name){
+    public List<ExerciseCatalogResponseDto> listExercises(String muscleGroupString, String name) {
         // Variável para conversão de ENUM para String
         MuscleGroup muscleGroupEnum = null;
         String nameNoSpace = null;
 
         // Lógica para transformar Enum em String. Ex.: muscleGroup = MuscleGroup.PEITO // busca get = &muscleGroup = peito
-        if(muscleGroupString != null && !muscleGroupString.isEmpty()){
-            try{
+        if (muscleGroupString != null && !muscleGroupString.isEmpty()) {
+            try {
                 muscleGroupEnum = MuscleGroup.valueOf(muscleGroupString.toUpperCase());
             } catch (IllegalArgumentException e) {
                 muscleGroupEnum = null;
@@ -35,9 +49,8 @@ public class ExerciseCatalogService {
         }
 
         // Lógica para retirar espaços no de-para do bd com o get. Ex.: nome exercicio = Supino Inclinado // busca get = &name=supinoinclinado
-        if(name != null){
+        if (name != null) {
             nameNoSpace = normalizeString(name);
-            System.out.println("Entrou no if? Sim!");
         }
 
         var exercises = repository.findWithFilters(muscleGroupEnum, nameNoSpace);
@@ -47,7 +60,7 @@ public class ExerciseCatalogService {
                 .toList();
     }
 
-    private ExerciseCatalogResponseDto mapToDto(ExerciseCatalog catalog){
+    private ExerciseCatalogResponseDto mapToDto(ExerciseCatalog catalog) {
         return new ExerciseCatalogResponseDto(
                 catalog.getId(),
                 catalog.getMuscleGroup(),
@@ -55,13 +68,13 @@ public class ExerciseCatalogService {
         );
     }
 
-    private String normalizeString(String input){
+    private String normalizeString(String input) {
         if (input == null) return null;
         // Separar o acento da letra - ex.: á vira "a" + "´"
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
         // Remover os acentos
         String semAcento = normalized.replaceAll("\\p{M}", "");
         //Remove o que não for letra (espaços, hífens e parênteses)
-        return semAcento.replaceAll("[^a-zA-Z0-9]","").toLowerCase();
+        return semAcento.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
     }
 }

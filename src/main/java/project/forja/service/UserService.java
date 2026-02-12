@@ -1,11 +1,14 @@
 package project.forja.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import project.forja.controller.dto.create.CreateUserDto;
-import project.forja.controller.dto.response.SessionResponseDto;
 import project.forja.controller.dto.response.UserResponseDto;
 import project.forja.controller.dto.update.UpdateUserDto;
 import project.forja.entity.User;
+import project.forja.exception.UserNotFoundException;
 import project.forja.repository.UserRepository;
 
 import java.time.Instant;
@@ -24,6 +27,9 @@ public class UserService {
     }
 
     public UUID createUser(CreateUserDto createUserDTO) {
+        if (userRepository.existsByEmail(createUserDTO.email())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este e-mail já está em uso.");
+        }
         // DTO -> ENTITY
         var entity = new User(null,
                 createUserDTO.name(),
@@ -52,7 +58,7 @@ public class UserService {
                 .toList();
     }
 
-    public UserResponseDto mapToDto(User user){
+    public UserResponseDto mapToDto(User user) {
         return new UserResponseDto(
                 user.getUserId(),
                 user.getName(),
@@ -70,41 +76,38 @@ public class UserService {
                                UpdateUserDto updateUserDTO) {
 
         var id = UUID.fromString(userId);
-        var userEntity = userRepository.findById(id);
-        if (userEntity.isPresent()) {
-            var user = userEntity.get();
-            if (updateUserDTO.name() != null) {
-                user.setName(updateUserDTO.name());
-            }
-            if (updateUserDTO.email() != null) {
-                user.setEmail(updateUserDTO.email());
-            }
-            if (updateUserDTO.password() != null) {
-                user.setPassword(updateUserDTO.password());
-            }
-            if (updateUserDTO.currentWeight() != null) {
-                user.setCurrentWeight(updateUserDTO.currentWeight());
-            }
-            if (updateUserDTO.height() != null) {
-                user.setHeight(updateUserDTO.height());
-            }
-            if (updateUserDTO.targetWeight() != null) {
-                user.setTargetWeight(updateUserDTO.targetWeight());
-            }
-            if (updateUserDTO.goalType() != null) {
-                user.setGoalType(updateUserDTO.goalType());
-            }
-            userRepository.save(user);
-        }
-    }
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não existe."));
 
+        if (updateUserDTO.name() != null) {
+            user.setName(updateUserDTO.name());
+        }
+        if (updateUserDTO.email() != null) {
+            user.setEmail(updateUserDTO.email());
+        }
+        if (updateUserDTO.password() != null) {
+            user.setPassword(updateUserDTO.password());
+        }
+        if (updateUserDTO.currentWeight() != null) {
+            user.setCurrentWeight(updateUserDTO.currentWeight());
+        }
+        if (updateUserDTO.height() != null) {
+            user.setHeight(updateUserDTO.height());
+        }
+        if (updateUserDTO.targetWeight() != null) {
+            user.setTargetWeight(updateUserDTO.targetWeight());
+        }
+        if (updateUserDTO.goalType() != null) {
+            user.setGoalType(updateUserDTO.goalType());
+        }
+        userRepository.save(user);
+    }
 
     public void deleteById(String userId) {
         var id = UUID.fromString(userId);
-        var userExists = userRepository.existsById(id);
-
-        if (userExists) {
-            userRepository.deleteById(id);
-        }
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não existe."));
+        userRepository.deleteById(id);
     }
+
 }

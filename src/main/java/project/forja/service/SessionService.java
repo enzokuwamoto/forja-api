@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import project.forja.controller.dto.create.CreateSessionDto;
 import project.forja.controller.dto.response.SessionResponseDto;
+import project.forja.controller.dto.update.UpdateUserDto;
 import project.forja.entity.*;
+import project.forja.exception.UserNotFoundException;
 import project.forja.repository.CardioLogRepository;
 import project.forja.repository.ExerciseCatalogRepository;
 import project.forja.repository.SessionRepository;
@@ -125,6 +127,7 @@ public class SessionService {
                 session.getUser().getUserId()
         );
     }
+
 
     public void deleteBySessionId(String sessionId) {
         var id = UUID.fromString(sessionId);

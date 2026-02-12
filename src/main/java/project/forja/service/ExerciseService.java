@@ -18,14 +18,6 @@ public class ExerciseService {
         this.exerciseCatalogRepository = exerciseCatalogRepository;
     }
 
-    public void createCatalog(CreateCatalogDto createCatalogDto) {
-        // DTO -> ENTITY
-        var exercise = new ExerciseCatalog(
-                createCatalogDto.muscleGroup(),
-                createCatalogDto.name()
-        );
-        var exerciseSaved = exerciseCatalogRepository.save(exercise);
-    }
 
     public List<ExerciseCatalog> listExercises() {
         return exerciseCatalogRepository.findAll();

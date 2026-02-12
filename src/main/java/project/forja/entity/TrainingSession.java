@@ -2,7 +2,6 @@ package project.forja.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +20,10 @@ public class TrainingSession {
     private LocalDateTime dateTime;
 
     @Column(name = "duration_time")
-    private int durationTime;
+    private Integer durationTime;
 
     @Column(name = "intensity_rpe")
-    private int intensityRpe;
+    private Integer intensityRpe;
 
     @Column(name = "battle_log")
     private String battleLog;
@@ -55,7 +54,7 @@ public class TrainingSession {
     public TrainingSession() {
     }
 
-    public TrainingSession(User user, LocalDateTime dateTime, int durationTime, int intensityRpe, String battleLog, TerrainType terrainType) {
+    public TrainingSession(User user, LocalDateTime dateTime, Integer durationTime, Integer intensityRpe, String battleLog, TerrainType terrainType) {
         this.user = user;
         this.dateTime = dateTime;
         this.durationTime = durationTime;
@@ -81,7 +80,7 @@ public class TrainingSession {
         this.dateTime = dateTime;
     }
 
-    public int getDurationTime() {
+    public Integer getDurationTime() {
         return durationTime;
     }
 
@@ -89,7 +88,7 @@ public class TrainingSession {
         this.durationTime = durationTime;
     }
 
-    public int getIntensityRpe() {
+    public Integer getIntensityRpe() {
         return intensityRpe;
     }
 

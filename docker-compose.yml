@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: forja-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_forja?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
+
+  mysql:
+    image: mysql:8.0
+    container_name: forja-db
+    ports:
+      - "3306:3306"
+    environment:
+        MYSQL_DATABASE: db_forja
+        MYSQL_ROOT_PASSWORD: 12345
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

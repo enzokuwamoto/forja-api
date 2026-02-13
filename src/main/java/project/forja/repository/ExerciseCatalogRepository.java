@@ -13,6 +13,8 @@ import java.util.UUID;
 @Repository
 public interface ExerciseCatalogRepository extends JpaRepository<ExerciseCatalog, UUID> {
 
+    boolean existsByName(String name);
+
     @Query("SELECT e FROM ExerciseCatalog e WHERE " +
             "(:muscleGroup IS NULL OR e.muscleGroup = :muscleGroup) AND " +
             "(:name IS NULL OR " +
@@ -22,7 +24,6 @@ public interface ExerciseCatalogRepository extends JpaRepository<ExerciseCatalog
     List<ExerciseCatalog> findWithFilters(@Param("muscleGroup") MuscleGroup muscleGroup,
                                           @Param("name") String name);
 
-    boolean findByName(String name);
 
 }
 

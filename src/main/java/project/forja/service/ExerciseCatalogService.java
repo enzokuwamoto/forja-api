@@ -23,7 +23,7 @@ public class ExerciseCatalogService {
 
 
     public void createCatalog(CreateCatalogDto createCatalogDto) {
-        if (repository.findByName(createCatalogDto.name())){
+        if (repository.existsByName(createCatalogDto.name())){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Exercício existente no catálogo.");
         };
         // DTO -> ENTITY
